@@ -1,0 +1,102 @@
+from news.models import *
+
+
+1. Создать двух пользователей
+
+	User.objects.create(username = 'Бендер Остап Ибрагимович')
+	User.objects.create(username = 'Ляпис-Трубецкой Никифор Иванович')
+
+
+
+2. Создать два объекта модели Author, связанные с пользователями (User).
+
+	Author.objects.create(author_id = 1)
+	Author.objects.create(author_id = 2)
+
+
+
+3. Добавить 4 категории в модель Category.
+
+	Category.objects.create(category = 'Новости нашего городка')
+	Category.objects.create(category = 'Это интересно')
+	Category.objects.create(category = 'Трудовые будни')
+	Category.objects.create(category = 'Спорт')
+
+
+
+4. Добавить 2 статьи и 1 новость (в модель Post).
+
+
+4.1 Новость.
+
+	Post.objects.create(article_or_new = 'NEW', title = 'Попал под лошадь.', text_body = 'Вчера на площади Свердлова попал под лошадь извозчика № 8974 гр.О.Бендер. Пострадавший отделался легким испугом', author = Author(2))
+
+
+
+4.2 Статья (Author О.Бендер).
+
+	Post.objects.create(article_or_new = 'ART', title = 'Девятый вал.', text_body = 'Восточная магистраль - это железный конь, который, взметая стальным скоком пески прошлого, вершит поступь истории выявляя очередной зубовный скрежет клевещущего врага, на которого уже взметается девятый вал, грозящий двенадцатым часом последним часом для прислужников империалистического Молоха, этого капиталистического Ваала; но, невзирая на ошибки, пусть рдеют, а равно и взвиваются стяги у маяка индустриализации, пылающего под клики трудящихся, коими под пение сердец выявляется заря новой жизни: вперед!', author = Author(1))
+
+
+
+
+4.3 Статья (Author О.Бендер).
+
+	Post.objects.create(article_or_new = 'ART', title = 'Путь Чемпиона!', text_body = 'Цветет урюк под грохот дней, Дрожит зарей кишлак, А средь арыков и аллей Идет гулять ишак.', author = Author(1))		
+
+	
+
+5. Присвоить категории статьям и новости. Как минимум в одной статье/новости должно быть не меньше 2 категорий.
+
+	PostCategory.objects.create(post = Post(1), category = Category(1))
+	PostCategory.objects.create(post = Post(1), category = Category(2))
+	PostCategory.objects.create(post = Post(2), category = Category(3))
+	PostCategory.objects.create(post = Post(3), category = Category(4))
+
+
+6. Создать минимум 4 комментария к разным объектам модели Post (в каждом объете должен быть как минимум один комментарий).
+
+	Comment.objects.create(text_comment = 'Молю! Дайте адрес О.Бендера - в жёлтых ботинках!', post_comment = Post(1), user_comment = User(2))
+	Comment.objects.create(text_comment = 'Ура! Мы ломим! Гнутся рельсы!', post_comment = Post(2), user_comment = User(2))
+	Comment.objects.create(text_comment = 'Вперед! Вперед! Пустим наши поезда к самому Индийскому океану!', post_comment = Post(2), user_comment = User(1))
+	Comment.objects.create(text_comment = 'Тоже мне, Чемпио-о-он...', post_comment = Post(3), user_comment = User(1))
+	
+
+7. Применяя функции like() и dislike() к статьям/новостям и комментариям, скорректировать рейтинги этих объектов.
+
+	Post.objects.get(pk=1).like_post()		# Повтор 5 раз для рейтинга 5 новости - объект Post(id=1) 
+	Post.objects.get(pk=2).like_post()		# Повтор 3 раза для рейтинга 3 статьи - объект Post(id=2)
+	Post.objects.get(pk=3).dislike_post()		# Повтор 4 раза для рейтинга минус 4 статьи - объект Post(id=3)
+
+	Comment.objects.get(pk=1).like_comment()	# Повтор 5 раз для рейтинга 5 комментария (id=1)
+	Comment.objects.get(pk=2).like_comment()	# Повтор 4 раза для рейтинга 4 комментария (id=2)
+	Comment.objects.get(pk=3).like_comment()	# Повтор 2 раза для рейтинга 2 комментария (id=3)
+	Comment.objects.get(pk=4).dislike_comment()	# Повтор 3 раза для рейтинга минус 3 комментария (id=4)
+
+
+8. Обновить рейтинги пользователей
+
+	Author.objects.get(pk=1).update_rating()
+	Author.objects.get(pk=2).update_rating()
+
+
+9. Вывести username и рейтинг лучшего пользователя (применяя сортировку и возвращаяя поля первого объекта)
+
+	Author.objects.all().order_by('-rating_author').values('author__username', 'rating_author')[:1]
+
+
+10. Вывести дату добавления, username автора, рейтинг, заголовок и превью лучшей статьи (по результатам лайков/дислайков к этой статье).
+
+	Post.objects.filter(article_or_new = 'ART').order_by('-rating_article_or_new')[:1].values('date_time_post', 'author__author__username', 'rating_article_or_new', 'title')
+	
+
+
+
+
+
+
+
+
+
+
+	

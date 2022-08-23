@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
-
+from django.db.models import Sum
 
 # Модель Author
 # Модель, содержащая объекты всех авторов.
@@ -18,19 +18,14 @@ class Author(models.Model):                                                     
     rating_author = models.FloatField(default=0.0)
     author = models.OneToOneField(User, on_delete=models.CASCADE)                   # Поле связи "один к одному" с встроенной
                                                                                     # моделью пользователей User;
-    def update_rating(self):                                                        # Метод upgrade_rating()
-        self.from_post = Post.objects.filter(author=self.author).values('rating_article_or_new')
-        self.a_1 = sum(self.from_post)
-        self.rating_author = a_1 * 3
 
-    #    self.rating_post = self.post_set.filter(author=self).aggregate(total_rating=models.Sum('rating'))['total_rating'] * 3
-    #     self.rating_comments_of_author = self.user_key.comment_set.exclude(post__in=self.post_set.filter(author=self)). \
-    #         filter(user=self.user_key).aggregate(total_rating=models.Sum('rating'))['total_rating']
-    #     self.rating_comments_of_users = Post.objects.filter(author=
-    #                                                         self).aggregate(total_rating=models.Sum('rating'))[
-    #         'total_rating']
-    #    self.rating_author = self.a + self.b + self.c
-        self.rating_author.save()
+    def update_rating(self):                                                        # Метод upgrade_rating()
+        rating_post = self.post_set.all().aggregate(s1=Sum('rating_article_or_new'))['s1']
+        rating_comment = Comment.objects.filter(user_comment__author=self).aggregate(s2=Sum('rating_comment'))['s2']
+        rating_comment_post = Comment.objects.exclude(user_comment__author=self).aggregate(s3=Sum('rating_comment'))['s3']
+        self.rating_author = rating_post * 3 + rating_comment + rating_comment_post
+        self.save()
+
 
 # Модель Category
 # Категории новостей/статей - темы, которые они отражают (спорт, политика, образование и т.д.)
@@ -60,28 +55,39 @@ class Category(models.Model):                                                   
 # - preview() возвращает начало статьи длиной 124 символа и добавляет многоточие в конце
 
 
-class Post(models.Model):                                                           # Модель 3
-    article_or_new = models.BooleanField(default=1)                     # 1 - статья; 0 - новость
-    title = models.CharField(max_length=255)                            # Заголовок статьи или новости
-    text_body = models.TextField(default='No text')                     # Текст статьи или новости
-    date_time_post = models.DateTimeField(auto_now_add=True)            # Дата и время СОЗДАНИЯ записи
-    rating_article_or_new = models.FloatField(default=0.0)              # Рейтинг статьи или новости
-    author = models.ForeignKey('Author', on_delete=models.CASCADE)      # - связь "один ко многим" с моделью Author
-    category = models.ManyToManyField(Category, through='PostCategory')     # - связь "многие ко многим" с моделью Category (через модель PostCategory)
+article = 'ART'
+new = 'NEW'
 
-                                                                        #   Методы
-    def like_post(self):                                                # - like() увеличивает рейтинг на единицу
+POSITIONS = [
+    (article, 'Статья'),
+    (new, 'Новость'),
+]
+
+
+class Post(models.Model):                                                                   # Модель 3
+    author = models.ForeignKey(Author, on_delete=models.CASCADE)                            # - связь "один ко многим" с моделью Author
+    article_or_new = models.CharField(max_length=3, choices=POSITIONS, default=article)     # ART - статья; NEW - новость
+    title = models.CharField(max_length=255)                                                # Заголовок статьи или новости
+    text_body = models.TextField(default='No text')                                         # Текст статьи или новости
+    date_time_post = models.DateTimeField(auto_now_add=True)                                # Дата и время СОЗДАНИЯ записи
+    rating_article_or_new = models.FloatField(default=0.0)                                  # Рейтинг статьи или новости
+    category = models.ManyToManyField(Category, through='PostCategory')                     # - связь "многие ко многим" с моделью Category (через модель PostCategory)
+
+                                                                            #   Методы
+    def like_post(self):                                                    # - like_post() увеличивает рейтинг на единицу
         self.rating_article_or_new += 1
         self.save()
 
-    def dislike_post(self):                                             # - dislike() уменьшает рейтинг на единицу
+    def dislike_post(self):                                                 # - dislike_post() уменьшает рейтинг на единицу
         self.rating_article_or_new -= 1
         self.save()
 
-    def preview_post(self):                                             # - preview() возвращает начало статьи длиной
-        self.preview = self.text_body[:124]                             # 124 символа и добавляет многоточие в конце
-        print(self.preview +" "+'...')
+    def preview_post(self):                                                 # - preview() возвращает начало статьи длиной
+        self.preview = self.text_body[:124]                                 # 124 символа и добавляет многоточие в конце
+        return self.preview + '...'
 
+    def __repr__(self):
+        return str(self)
 
 # Модель PostCategory
 # Промежуточная модель для связи "многие ко многим"
@@ -89,9 +95,9 @@ class Post(models.Model):                                                       
 # - связь "один ко многим" с моделью Category
 
 
-class PostCategory(models.Model):                                                   # Модель 4
-    post = models.ForeignKey(Post, on_delete=models.CASCADE)            # - связь "один ко многим" с моделью Post
-    category = models.ForeignKey('Category', on_delete=models.CASCADE)
+class PostCategory(models.Model):                                           # Модель 4
+    post = models.ForeignKey(Post, on_delete=models.CASCADE)                # - связь "один ко многим" с моделью Post
+    category = models.ForeignKey(Category, on_delete=models.CASCADE)
 
 
 # Модель Comment
@@ -108,12 +114,12 @@ class PostCategory(models.Model):                                               
 # - dislike() уменьшает рейтинг на единицу
 
 
-class Comment(models.Model):                                                        # Модель 5
+class Comment(models.Model):                                                # Модель 5
     text_comment = models.TextField(default='No comment')                   # Текст комментария
     date_time_comment = models.DateTimeField(auto_now_add=True)             # Дата и время СОЗДАНИЯ комментария
     rating_comment = models.FloatField(default=0.0)                         # Рейтинг комментария
-    post_comment = models.ForeignKey('Post', on_delete=models.CASCADE)      # Связь "один ко многим" с моделью Post
-    user_comment = models.ForeignKey(User, on_delete=models.CASCADE)        # - связь "один ко многим" со встроенной
+    post_comment = models.ForeignKey(Post, on_delete=models.CASCADE)      # Связь "один ко многим" с моделью Post
+    user_comment = models.ForeignKey(User, on_delete=models.CASCADE)      # - связь "один ко многим" со встроенной
                                                                             #   моделью User (коммент/ может оставить любой User, не только Author)
                                                                             #   Методы
     def like_comment(self):                                                 # - like() увеличивает рейтинг на единицу
