@@ -89,6 +89,13 @@ from news.models import *
 
 	Post.objects.filter(article_or_new = 'ART').order_by('-rating_article_or_new')[:1].values('date_time_post', 'author__author__username', 'rating_article_or_new', 'title')
 	
+	print(Post.objects.filter(article_or_new = 'ART').order_by('-rating_article_or_new')[:1])
+
+
+11. Вывести все комментарии (дата, пользователь, рейтинг, текст) к этой статье.
+
+	id_id = Post.objects.filter(article_or_new = 'ART').order_by('-rating_article_or_new')[:1].values('pk')	
+	Comment.objects.filter(post_comment=id_id).values('date_time_comment', 'user_comment', 'rating_comment', 'text_comment')
 
 
 
