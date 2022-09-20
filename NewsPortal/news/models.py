@@ -129,5 +129,7 @@ class Comment(models.Model):                                                # М
         self.rating_comment = self.rating_comment - 1
         self.save()
 
+    def __str__(self):
+        return str(self.text_comment)[:124] + '...'
 
 # Create your models here.
