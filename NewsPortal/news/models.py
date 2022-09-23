@@ -83,11 +83,12 @@ class Post(models.Model):                                                       
         self.save()
 
     def preview_post(self):                                                 # - preview() возвращает начало статьи длиной
-        return str(self.text_body)[:124] + '...'                            # 124 символа и добавляет многоточие в конце
+        return str(self.text_body)[:20] + '...'                            # 124 символа и добавляет многоточие в конце
 
     def __str__(self):
-        return str(self.text_body)[:124] + '...'
+        return f'{self.title} {self.text_body[:20]}' + '...'
 
+# return f'{self.name.title()}: {self.description[:20]}'
 # Модель PostCategory
 # Промежуточная модель для связи "многие ко многим"
 # - связь "один ко многим" с моделью Post

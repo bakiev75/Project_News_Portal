@@ -1,13 +1,37 @@
-<!--  наследуемся от шаблона default.html, который мы создавали для flatpages -->
+                                        <!--  наследуемся от шаблона default.html, который мы создавали для flatpages -->
 {% extends 'flatpages/default.html' %}
 
-<!-- Название у нас будет News -->
+                                        <!-- Название у нас будет News -->
 {% block title %}
 News
 {% endblock title %}
 
-<!-- В контенте на странице мы выводим все новости -->
+                                        <!-- В контенте на странице мы выводим все новости -->
 {% block content %}
-<h1>Все новости</h1>
-{{ news }}
+    <h1>Все новости</h1>
+    <hr>
+    {% if news %}
+    <table>                             <!-- Начинаем описывать таблицу -->
+        <tr>                            <!-- Добавляем строку -->
+            <td>                        <!-- Добавляем ячейку в строку -->
+                   Заголовок &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;
+            </td>
+            <td>                        <!-- Добавляем ещё одну ячейку в строку и так далее -->
+                   Дата публикации &emsp;&emsp;&emsp;&emsp;
+            </td>
+            <td>
+                   Текст &emsp;&emsp;&emsp;&emsp;
+            </td>
+        </tr>                           <!-- Не забываем закрыть HTML-тег строки -->
+        {% for new in news %}
+        <tr>
+            <td>{{ new.title }}</td>
+            <td>{{ new.date_time_post | date:'d M Y'  }}</td>
+            <td>{{ new.text_body | truncatechars:20}}</td>
+        </tr>
+        {% endfor %}
+    </table>                            <!-- ... и таблицы -->
+    {% else %}
+        <h2>Новостей нет!</h2>          <!-- Если товаров нет, говорим, что товаров нет ;) -->
+    {% endif %}
 {% endblock content %}
