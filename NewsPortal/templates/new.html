@@ -1,6 +1,8 @@
 <!--  наследуемся от шаблона default.html, который мы создавали для flatpages -->
 {% extends 'flatpages/default.html' %}
 
+{% load custom_filters %}                           <!-- Объявляем свой фильтр-->
+
 <!-- Название у нас будет New -->
 {% block title %}
 New
@@ -8,8 +10,8 @@ New
 
 <!-- В контенте на странице мы выводим саму новость, идентификатор которой был передан в url -->
 {% block content %}
-<h1>{{ new.title }}</h1>
+<h1>{{ new.title|currency}}</h1>
 <h2>{{ new.date_time_post | date:'d M Y'  }}</h2>
 <hr>
-<p>{{ new.text_body}}</p>
+<p>{{ new.text_body|currency}}</p>
 {% endblock content %}

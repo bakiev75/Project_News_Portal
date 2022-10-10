@@ -1,6 +1,8 @@
                                         <!--  наследуемся от шаблона default.html, который мы создавали для flatpages -->
 {% extends 'flatpages/default.html' %}
 
+{% load custom_filters %}                           <!-- Объявляем свой фильтр currency-->
+
                                         <!-- Название у нас будет News -->
 {% block title %}
 News
@@ -35,9 +37,9 @@ News
         </tr>                           <!-- Не забываем закрыть HTML-тег строки -->
         {% for new in news %}
         <tr>
-            <td>{{ new.title }}</td>
+            <td>{{ new.title | currency }}</td>                             <!-- мой фильтр Цензор-->
             <td>{{ new.date_time_post | date:'d M Y'  }}</td>
-            <td>{{ new.text_body | truncatechars:20}}</td>
+            <td>{{ new.text_body | truncatechars:20 | currency }}</td>      <!-- мой фильтр Цензор-->
         </tr>
         {% endfor %}
     </table>                            <!-- ... и таблицы -->
