@@ -3,21 +3,24 @@ from django import template
 
 register = template.Library()
 
-dict1 = {               # Словарь Цензор. Искомые слова и их длина. Дополняемый новыми словами
-    "ишак":4,
-    "Ишак":4,
-    "лошадь":6,
-    "Лошадь":6
+dict1 = {                                 # Словарь Цензор. Искомые слова и их длина. Дополняемый новыми словами
+    "ишак": 4,
+    "Ишак": 4,
+    "лошадь": 6,
+    "Лошадь": 6
 }
 
-# Регистрируем наш фильтр под именем currency, чтоб Django понимал,
-# что это именно фильтр для шаблонов, а не простая функция.
+
 @register.filter()
-def currency(text, dict_censor = dict1):
+def censor(text, dict_censor=None):
+    if dict_censor is None:
+        dict_censor = dict1
+    if type(text) != str:               # Проверка строкового типа. Вызов исключения при попытке применения не к строке
+        raise ValueError
     length = len(text)
-    for word in dict_censor:                        # Цикл, для перебора слов (ключей) из словаря Цензор
+    for word in dict_censor:              # Цикл, для перебора слов (ключей) из словаря Цензор
         index = 0
-        while index < length:                       # Цикл для поиска вхождения текущего слова в строку и определение его индекса
+        while index < length:             # Цикл для поиска вхождения текущего слова в строку и определение его индекса
             i = text.find(word, index)
             if i == -1:
                 break
