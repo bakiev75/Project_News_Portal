@@ -18,6 +18,8 @@ class Author(models.Model):                                                     
     rating_author = models.FloatField(default=0.0)
     author = models.OneToOneField(User, on_delete=models.CASCADE)                   # Поле связи "один к одному" с встроенной
                                                                                     # моделью пользователей User;
+    def __str__(self):
+        return f'{self.author}'
 
     def update_rating(self):                                                        # Метод upgrade_rating()
         rating_post = self.post_set.all().aggregate(s1=Sum('rating_article_or_new'))['s1']

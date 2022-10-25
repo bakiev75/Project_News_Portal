@@ -1,0 +1,80 @@
+                             <!--  наследуемся от шаблона default.html, который мы создавали для flatpages -->
+{% extends 'flatpages/default.html' %}
+
+{% load custom_filters %}                           <!-- Объявляем свой фильтр currency-->
+
+{% load custom_tags %}
+                                        <!-- Название у нас будет News -->
+{% block title %}
+News
+{% endblock title %}
+
+                                        <!-- В контенте на странице мы выводим все новости -->
+{% block content %}
+    <h1>Поиск новостей</h1>
+
+    <h5> {{ "Всё уже было! Надо только поискать..." }} </h5>
+    <hr>
+    <p>Всего новостей и статей на странице:  {{ news|length }}</p>
+    <hr>
+
+     {# Добавляем форму, которая объединяет набор полей, которые будут отправляться в запросе #}
+    <form action="" method="get">
+       {# Переменная, которую мы передали через контекст, может сгенерировать нам форму с полями #}
+       {{ filterset.form.as_p }}
+       {# Добавим кнопку отправки данных формы #}
+       <input type="submit" value="Найти" />
+    </form>
+
+    <hr>
+    {% if news %}
+    <table>                             <!-- Начинаем описывать таблицу -->
+        <tr>                            <!-- Добавляем строку -->
+            <td>                        <!-- Добавляем ячейку в строку -->
+                   &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;Заголовок &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;
+            </td>
+            <td>                        <!-- Добавляем ещё одну ячейку в строку и так далее -->
+                   &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;Дата публикации &emsp;&emsp;&emsp;&emsp;
+            </td>
+            <td>
+                   &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;Текст &emsp;&emsp;&emsp;&emsp;
+            </td>
+            <td>                        <!-- Автора пробую добавить -->
+                   &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;Автор публикации &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;
+            </td>
+        </tr>                           <!-- Не забываем закрыть HTML-тег строки -->
+        {% for new in news %}
+        <tr>
+            <td>{{ new.title | censor }}</td>                             <!-- мой фильтр Цензор-->
+            <td>{{ new.date_time_post | date:'d M Y' }}</td>
+            <td>{{ new.text_body | truncatechars:20 | censor }}</td>      <!-- мой фильтр Цензор-->
+            <td>{{ new.author }}</td>
+        </tr>
+        {% endfor %}
+    </table>                            <!-- ... и таблицы -->
+    {% else %}
+        <h2>Новостей нет!</h2>          <!-- Если товаров нет, говорим, что товаров нет ;) -->
+    {% endif %}
+
+{# Добавляем пагинацию на страницу #}
+
+   {% if page_obj.has_previous %}
+       {# Для каждой ссылки пагинации указываем обработку через новый тег #}
+       <a href="?{% url_replace page=1 %}">1</a>
+       {% if page_obj.previous_page_number != 1 %}
+           ...
+           <a href="?{% url_replace page=page_obj.previous_page_number %}">{{ page_obj.previous_page_number }}</a>
+       {% endif %}
+   {% endif %}
+
+   {{ page_obj.number }}
+
+   {% if page_obj.has_next %}
+       <a href="?{% url_replace page=page_obj.next_page_number %}">{{ page_obj.next_page_number }}</a>
+       {% if paginator.num_pages != page_obj.next_page_number %}
+           ...
+           <a href="?{% url_replace page=page_obj.paginator.num_pages %}">{{ page_obj.paginator.num_pages }}</a>
+       {% endif %}
+   {% endif %}
+
+{% endblock content %}
