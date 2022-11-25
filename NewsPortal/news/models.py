@@ -1,6 +1,8 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.db.models import Sum
+from django.urls import reverse
+
 
 # Модель Author
 # Модель, содержащая объекты всех авторов.
@@ -38,6 +40,8 @@ class Author(models.Model):                                                     
 class Category(models.Model):                                                       # Модель 2
     category = models.CharField(max_length=255, unique=True)
 
+    def __str__(self):
+        return f'{self.category}'
 
 # Модель Post
 # Эта модель должна содержать в себе статьи и новости, которые создают пользователи.
@@ -90,6 +94,9 @@ class Post(models.Model):                                                       
     def __str__(self):
         return f'{self.title} {self.text_body[:20]}' + '...'
 
+    def get_absolute_url(self):
+        return reverse('post_detail', args=[str(self.id)])
+
 # return f'{self.name.title()}: {self.description[:20]}'
 # Модель PostCategory
 # Промежуточная модель для связи "многие ко многим"
@@ -101,6 +108,8 @@ class PostCategory(models.Model):                                           # М
     post = models.ForeignKey(Post, on_delete=models.CASCADE)                # - связь "один ко многим" с моделью Post
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
 
+    def __str__(self):
+        return f'{self.category}'
 
 # Модель Comment
 # Под каждой статьёй/новостью можно оставлять комментарии, поэтому необходимо организовать их способ хранения тоже.

@@ -1,7 +1,7 @@
 {% extends 'flatpages/default.html' %}
 
 {% block content %}
-<h1>Новая новость.</h1>
+<h1>Редактор новости.</h1>
 <hr>
 <form action="" method="post">
     {% csrf_token %}
@@ -9,4 +9,3 @@
     <input type="submit" value="Save" />
 </form>
 {% endblock content %}
-

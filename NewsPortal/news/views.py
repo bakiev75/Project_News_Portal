@@ -1,8 +1,12 @@
 from datetime import datetime
+
+from django.urls import reverse_lazy
 # from django.shortcuts import render
 # Импортируем класс, который говорит нам о том,
 # что в этом представлении мы будем выводить список объектов из БД
-from django.views.generic import ListView, DetailView
+from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
+
+from .forms import NewsForm, ArticleForm
 from .models import Post
 from .filters import NewsFilter
 
@@ -43,7 +47,8 @@ class NewDetail(DetailView):
 
 class SearchNewsList(ListView):             # Создаю новый класс для страницы поиска /news/search
     model = Post                            # Указываем модель, объекты которой мы будем выводить
-    ordering = '-date_time_post'            # Поле, которое будет использоваться для сортировки объектов - дата
+   # ordering = '-date_time_post'            # Поле, которое будет использоваться для сортировки объектов - дата
+    ordering = '-date_time_post'  # Поле, которое будет использоваться для сортировки объектов - дата
     template_name = 'search.html'           # Указываем имя шаблона, в котором будут все инструкции о том,
                                             # как именно пользователю должны быть показаны наши объекты
     context_object_name = 'news'            # Это имя списка, в котором будут лежать все объекты.
@@ -69,8 +74,55 @@ class SearchNewsList(ListView):             # Создаю новый класс
         context['filterset'] = self.filterset
         return context
 
+# Добавляем новое представление для создания новости.
+class NewsCreate(CreateView):
+    # Указываем нашу разработанную форму
+    form_class = NewsForm
+    # модель
+    model = Post
+    # и новый шаблон, в котором используется форма.
+    template_name = 'news_create.html'
 
+    def form_valid(self, form):
+        post = form.save(commit=False)
+        post.article_or_new = 'NEW'
+        return super().form_valid(form)
 
+# Добавляем представление для изменения новости.
+class NewsUpdate(UpdateView):
+    form_class = NewsForm
+    model = Post
+    template_name = 'news_edit.html'
 
+# Представление удаляющее новость.
+class NewsDelete(DeleteView):
+    model = Post
+    template_name = 'news_delete.html'
+    success_url = reverse_lazy('news_list')
 
+# Добавляем новое представление для создания статьи.
+class ArticlesCreate(CreateView):
+    # Указываем нашу разработанную форму
+    form_class = ArticleForm
+    # модель
+    model = Post
+    # и новый шаблон, в котором используется форма.
+    template_name = 'articles_create.html'
+
+    def form_valid(self, form):
+        post = form.save(commit=False)
+        post.article_or_new = 'ART'
+        return super().form_valid(form)
+
+# Добавляем представление для изменения статьи.
+class ArticlesUpdate(UpdateView):
+    form_class = NewsForm
+    model = Post
+    template_name = 'articles_edit.html'
+
+# Представление удаляющее статью.
+class ArticlesDelete(DeleteView):
+    model = Post
+    template_name = 'articles_delete.html'
+    success_url = reverse_lazy('articles_list')
 # Create your views here.
