@@ -1,5 +1,6 @@
 from datetime import datetime
 
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
 # from django.shortcuts import render
 # Импортируем класс, который говорит нам о том,
@@ -89,7 +90,7 @@ class NewsCreate(CreateView):
         return super().form_valid(form)
 
 # Добавляем представление для изменения новости.
-class NewsUpdate(UpdateView):
+class NewsUpdate(LoginRequiredMixin, UpdateView):               # проверка наличия аутентификации с помощью миксина
     form_class = NewsForm
     model = Post
     template_name = 'news_edit.html'
@@ -115,7 +116,7 @@ class ArticlesCreate(CreateView):
         return super().form_valid(form)
 
 # Добавляем представление для изменения статьи.
-class ArticlesUpdate(UpdateView):
+class ArticlesUpdate(LoginRequiredMixin, UpdateView):             # проверка наличия аутентификации с помощью миксина
     form_class = NewsForm
     model = Post
     template_name = 'articles_edit.html'
