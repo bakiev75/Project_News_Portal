@@ -1,6 +1,8 @@
-{% extends "main.html" %}
+{% extends 'flatpages/default.html' %}
 
 {% block content %}
+<h1><a href="/">Simple SignUp/SignIn app</a></h1>
+<hr>
 <h2> Войти в систему </h2>
 <form method="post">
 {% csrf_token %}
