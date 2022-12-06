@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.urls import reverse_lazy
 # from django.shortcuts import render
 # Импортируем класс, который говорит нам о том,
@@ -76,7 +76,8 @@ class SearchNewsList(ListView):             # Создаю новый класс
         return context
 
 # Добавляем новое представление для создания новости.
-class NewsCreate(CreateView):
+class NewsCreate(PermissionRequiredMixin, CreateView):
+    permission_required = 'news.add_post'
     # Указываем нашу разработанную форму
     form_class = NewsForm
     # модель
@@ -90,19 +91,22 @@ class NewsCreate(CreateView):
         return super().form_valid(form)
 
 # Добавляем представление для изменения новости.
-class NewsUpdate(LoginRequiredMixin, UpdateView):               # проверка наличия аутентификации с помощью миксина
+class NewsUpdate(PermissionRequiredMixin, UpdateView):
+    permission_required = 'news.change_post'
     form_class = NewsForm
     model = Post
     template_name = 'news_edit.html'
 
 # Представление удаляющее новость.
-class NewsDelete(DeleteView):
+class NewsDelete(PermissionRequiredMixin, DeleteView):
+    permission_required = 'news.delete_post'
     model = Post
     template_name = 'news_delete.html'
     success_url = reverse_lazy('news_list')
 
 # Добавляем новое представление для создания статьи.
-class ArticlesCreate(CreateView):
+class ArticlesCreate(PermissionRequiredMixin, CreateView):
+    permission_required = 'news.add_post'
     # Указываем нашу разработанную форму
     form_class = ArticleForm
     # модель
@@ -116,13 +120,15 @@ class ArticlesCreate(CreateView):
         return super().form_valid(form)
 
 # Добавляем представление для изменения статьи.
-class ArticlesUpdate(LoginRequiredMixin, UpdateView):             # проверка наличия аутентификации с помощью миксина
+class ArticlesUpdate(PermissionRequiredMixin, UpdateView):
+    permission_required = 'news.change_post'
     form_class = NewsForm
     model = Post
     template_name = 'articles_edit.html'
 
 # Представление удаляющее статью.
-class ArticlesDelete(DeleteView):
+class ArticlesDelete(PermissionRequiredMixin, DeleteView):
+    permission_required = 'news.delete_post'
     model = Post
     template_name = 'articles_delete.html'
     success_url = reverse_lazy('articles_list')
