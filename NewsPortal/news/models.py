@@ -91,8 +91,12 @@ class Post(models.Model):                                                       
     def preview_post(self):                                                 # - preview() возвращает начало статьи длиной
         return str(self.text_body)[:20] + '...'                            # 124 символа и добавляет многоточие в конце
 
+    def title_as_text(self):
+        return str(self.title)
+
     def __str__(self):
         return f'{self.title} {self.text_body[:20]}' + '...'
+
 
     def get_absolute_url(self):
         return reverse('post_detail', args=[str(self.id)])

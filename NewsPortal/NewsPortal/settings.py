@@ -161,3 +161,9 @@ ACCOUNT_AUTHENTICATION_METHOD = 'email'
 ACCOUNT_EMAIL_VERIFICATION = 'none'
 
 ACCOUNT_FORMS = {'signup': 'sign.models.BasicSignupForm'}
+
+EMAIL_HOST: str = 'smtp.yandex.ru'
+EMAIL_PORT: int = 465
+EMAIL_HOST_USER = 'andrey.bakiev75'
+EMAIL_HOST_PASSWORD = '95##*!PxxW>RbbW'
+EMAIL_USE_SSL = True
