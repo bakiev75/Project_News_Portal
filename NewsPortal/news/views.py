@@ -121,16 +121,24 @@ class ArticlesCreate(PermissionRequiredMixin, CreateView):
     # и новый шаблон, в котором используется форма.
     template_name = 'articles_create.html'
 
-    send_mail(
-        subject=Post.title,
-        message='Test',
-        from_email='andrey.bakiev75@yandex.ru',
-        recipient_list=['andrey.bakiev@gmail.com']
-    )
+    # send_mail(
+    #     subject=post.title,
+    #     message='Test',
+    #     from_email='andrey.bakiev75@yandex.ru',
+    #     recipient_list=['andrey.bakiev@gmail.com']
+    # )
 
     def form_valid(self, form):
         post = form.save(commit=False)
         post.article_or_new = 'ART'
+
+        send_mail(
+            subject=post.title,
+            message=post.text_body,
+            from_email='andrey.bakiev75@yandex.ru',
+            recipient_list=['andrey.bakiev@gmail.com']
+        )
+
         return super().form_valid(form)
 
 
