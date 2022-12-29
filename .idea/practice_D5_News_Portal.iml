@@ -7,11 +7,4 @@
     <orderEntry type="jdk" jdkName="Python 3.10 (Project_News_Portal)" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
   </component>
-  <component name="PyNamespacePackagesService">
-    <option name="namespacePackageFolders">
-      <list>
-        <option value="$MODULE_DIR$/NewsPortal" />
-      </list>
-    </option>
-  </component>
 </module>

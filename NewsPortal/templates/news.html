@@ -1,9 +1,8 @@
-                                        <!--  наследуемся от шаблона default.html, который мы создавали для flatpages -->
 {% extends 'flatpages/default.html' %}
 
-{% load custom_filters %}                           <!-- Объявляем свой фильтр currency-->
+{% load custom_filters %}               <!-- Объявляем свой фильтр currency-->
 
-                                        <!-- Название у нас будет News -->
+
 {% block title %}
 News
 {% endblock title %}
@@ -28,6 +27,10 @@ News
             <td>                        <!-- Добавляем ячейку в строку -->
                 &emsp;&emsp;&emsp;&emsp;Заголовок &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;
             </td>
+            <td>
+                Категории
+            </td>
+
             <td>                        <!-- Добавляем ещё одну ячейку в строку и так далее -->
                   &emsp;&emsp;&emsp;&emsp; Дата публикации &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;
             </td>
@@ -37,9 +40,16 @@ News
         </tr>                           <!-- Не забываем закрыть HTML-тег строки -->
         {% for new in news %}
         <tr>
-            <td>{{ new.title | censor }}</td>                             <!-- мой фильтр Цензор-->
-            <td>{{ new.date_time_post | date:'d M Y' }}</td>
-            <td>{{ new.text_body | truncatechars:20 | censor }}</td>      <!-- мой фильтр Цензор-->
+            <td align="left">{{ new.title | censor }}</td>                             <!-- мой фильтр Цензор-->
+
+            <td>
+                {% for category in new.category.all %}
+                    <a href="{% url 'category_list' category.id %}">{{ category }}</a>
+                {% endfor %}
+            </td>
+
+            <td align="center">{{ new.date_time_post | date:'d M Y' }}</td>
+            <td align="left">{{ new.text_body | truncatechars:20 | censor }}</td>      <!-- мой фильтр Цензор-->
         </tr>
         {% endfor %}
     </table>                            <!-- ... и таблицы -->

@@ -1,7 +1,9 @@
 from datetime import datetime
 
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.core.mail import send_mail
+from django.shortcuts import get_object_or_404, render
 from django.urls import reverse_lazy
 # from django.shortcuts import render
 # Импортируем класс, который говорит нам о том,
@@ -9,17 +11,21 @@ from django.urls import reverse_lazy
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 
 from .forms import NewsForm, ArticleForm
-from .models import Post
+from .models import Post, Category
 from .filters import NewsFilter
 
+from django.core.mail import EmailMultiAlternatives     # импортируем класс для создания объекта письма с html
+from django.template.loader import render_to_string     # импортируем функцию, которая срендерит наш html в текст
+
+
 class NewsList(ListView):
-    model = Post  # Указываем модель, объекты которой мы будем выводить
-    ordering = '-date_time_post'  # Поле, которое будет использоваться для сортировки объектов - дата
-    template_name = 'news.html'  # Указываем имя шаблона, в котором будут все инструкции о том,
-    # как именно пользователю должны быть показаны наши объекты
-    context_object_name = 'news'  # Это имя списка, в котором будут лежать все объекты.
-    # Его надо указать, чтобы обратиться к списку объектов в html-шаблоне.
-    paginate_by = 10  # вот так мы можем указать количество записей на странице
+    model = Post                    # Указываем модель, объекты которой мы будем выводить
+    ordering = '-date_time_post'    # Поле, которое будет использоваться для сортировки объектов - дата
+    template_name = 'news.html'     # Указываем имя шаблона, в котором будут все инструкции о том,
+                                    # как именно пользователю должны быть показаны наши объекты
+    context_object_name = 'news'    # Это имя списка, в котором будут лежать все объекты.
+                                    # Его надо указать, чтобы обратиться к списку объектов в html-шаблоне.
+    paginate_by = 10                # вот так мы можем указать количество записей на странице
 
     # Переопределяем функцию получения списка новостей
     # Метод get_context_data позволяет нам изменить набор данных,
@@ -37,6 +43,30 @@ class NewsList(ListView):
         # Анонс горячих новостей.
         context['hot_news'] = None
         return context
+
+class CategoryListViev(NewsList):                           # Создание в процессе вебинара
+    model = Post
+    template_name = 'category_list.html'
+    context_object_name = 'category_news_list'
+    def get_queryset(self):
+        self.category = get_object_or_404(Category, id=self.kwargs['pk'])
+        queryset = Post.objects.filter(category=self.category).order_by('-date_time_post')
+        return queryset
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['is_not_subscriber'] = self.request.user not in self.category.subscribers.all()
+        context['category'] = self.category
+        return context
+
+@login_required
+def subscribe(request, pk):
+    user = request.user
+    category = Category.objects.get(id=pk)
+    category.subscribers.add(user)
+
+    message = 'Вы подписаны на рассылку новостей категории '
+    return render(request, 'subscribe.html', {'category': category, 'message': message})
 
 
 class NewDetail(DetailView):
@@ -91,6 +121,26 @@ class NewsCreate(PermissionRequiredMixin, CreateView):
     def form_valid(self, form):
         post = form.save(commit=False)
         post.article_or_new = 'NEW'
+
+        # html_content = render_to_string(                                # получаем наш html
+        #     'for_post_create.html',
+        #     {
+        #         'post': post,
+        #     }
+        # )
+
+        # в конструкторе уже знакомые нам параметры. Называются правда немного по-другому, но суть та же.
+        # msg = EmailMultiAlternatives(
+        #     subject=f'{post.title}',
+        #     body=post.text_body,                                        # это то же, что и message
+        #     from_email='andrey.bakiev75@yandex.ru',
+        #     to=['andrey.bakiev@gmail.com'],                             # это то же, что и recipients_list
+        # )
+        # msg.attach_alternative(html_content, "text/html")  # добавляем html
+        #
+        # msg.send()  # отсылаем
+
+
         return super().form_valid(form)
 
 
@@ -121,34 +171,19 @@ class ArticlesCreate(PermissionRequiredMixin, CreateView):
     # и новый шаблон, в котором используется форма.
     template_name = 'articles_create.html'
 
-    # send_mail(
-    #     subject=post.title,
-    #     message='Test',
-    #     from_email='andrey.bakiev75@yandex.ru',
-    #     recipient_list=['andrey.bakiev@gmail.com']
-    # )
 
     def form_valid(self, form):
         post = form.save(commit=False)
         post.article_or_new = 'ART'
 
-        send_mail(
-            subject=post.title,
-            message=post.text_body,
-            from_email='andrey.bakiev75@yandex.ru',
-            recipient_list=['andrey.bakiev@gmail.com']
-        )
+        # send_mail(                                              # Отправка на почту из списка
+        #     subject=post.title,
+        #     message=post.text_body,
+        #     from_email='andrey.bakiev75@yandex.ru',
+        #     recipient_list=['andrey.bakiev@gmail.com']          # Заменить на почту по подписке
+        # )
 
         return super().form_valid(form)
-
-
-    # send_mail(
-    #     subject=f'{appointment.client_name} {appointment.date.strftime("%Y-%M-%d")}',
-    #     # имя клиента и дата записи будут в теме для удобства
-    #     message=appointment.message,  # сообщение с кратким описанием проблемы
-    #     from_email='peterbadson@yandex.ru',  # здесь указываете почту, с которой будете отправлять (об этом попозже)
-    #     recipient_list=[]  # здесь список получателей. Например, секретарь, сам врач и т. д.
-    # )
 
 
 # Добавляем представление для изменения статьи.
