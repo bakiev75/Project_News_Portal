@@ -5,6 +5,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMix
 from django.core.mail import send_mail
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse_lazy
+from django.views import View
 # from django.shortcuts import render
 # Импортируем класс, который говорит нам о том,
 # что в этом представлении мы будем выводить список объектов из БД
@@ -13,6 +14,9 @@ from django.views.generic import ListView, DetailView, CreateView, UpdateView, D
 from .forms import NewsForm, ArticleForm
 from .models import Post, Category
 from .filters import NewsFilter
+
+from .tasks import hello
+from django.http import HttpResponse
 
 from django.core.mail import EmailMultiAlternatives     # импортируем класс для создания объекта письма с html
 from django.template.loader import render_to_string     # импортируем функцию, которая срендерит наш html в текст
@@ -201,3 +205,10 @@ class ArticlesDelete(PermissionRequiredMixin, DeleteView):
     template_name = 'articles_delete.html'
     success_url = reverse_lazy('articles_list')
 # Create your views here.
+
+# Представление для проверки работы таски, при вызове страницы по адресу news/tasks/
+
+class TasksView(View):
+    def get(self, request):
+        hello.delay()
+        return HttpResponse('Hello!')

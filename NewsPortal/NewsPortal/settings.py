@@ -179,3 +179,11 @@ APSCHEDULER_DATETIME_FORMAT = "N j, Y, f:s a"
 APSCHEDULER_RUN_NOW_TIMEOUT = 25
 
 SITE_URL = 'http://127.0.0.1:8000'
+
+# Добавление настроек Redis
+
+CELERY_BROKER_URL = 'redis://:gQ66sDXqRrO3Vvnx4QeU4nvoGjoDTJ2h@redis-14686.c135.eu-central-1-1.ec2.cloud.redislabs.com:14686'
+CELERY_RESULT_BACKEND = 'redis://:gQ66sDXqRrO3Vvnx4QeU4nvoGjoDTJ2h@redis-14686.c135.eu-central-1-1.ec2.cloud.redislabs.com:14686'
+CELERY_ACCEPT_CONTENT = ['application/json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
