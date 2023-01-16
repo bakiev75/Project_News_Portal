@@ -1,6 +1,6 @@
 from django.urls import path
 # Импортируем созданное нами представление
-from .views import NewsList, NewDetail, SearchNewsList, NewsCreate, NewsUpdate, NewsDelete, TasksView
+from .views import NewsList, NewDetail, SearchNewsList, NewsCreate, NewsUpdate, NewsDelete
 
 from .views import CategoryListViev, subscribe
 
@@ -20,5 +20,5 @@ urlpatterns = [
    path('categories/<int:pk>', CategoryListViev.as_view(), name='category_list'),
    path('categories/<int:pk>/subscribe', subscribe, name='subscribe'),
 # Для проверки таски делаем отдельную страницу
-   path('tasks/', TasksView.as_view()),
+   # path('tasks/', TasksView.as_view()),
 ]

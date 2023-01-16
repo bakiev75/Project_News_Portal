@@ -15,7 +15,7 @@ from .forms import NewsForm, ArticleForm
 from .models import Post, Category
 from .filters import NewsFilter
 
-from .tasks import hello, printer
+# from .tasks import hello, printer
 from django.http import HttpResponse
 
 from django.core.mail import EmailMultiAlternatives     # импортируем класс для создания объекта письма с html
@@ -208,9 +208,9 @@ class ArticlesDelete(PermissionRequiredMixin, DeleteView):
 
 # Представление для проверки работы таски, при вызове страницы по адресу news/tasks/
 
-class TasksView(View):
-    def get(self, request):
-        printer.apply_async([10],
-                            eta = datetime.now() + timedelta(seconds=5))
-        hello.delay()
-        return HttpResponse('Hello!')
+# class TasksView(View):
+#     def get(self, request):
+#         printer.apply_async([10],
+#                             eta = datetime.now() + timedelta(seconds=5))
+#         hello.delay()
+#         return HttpResponse('Hello!')
