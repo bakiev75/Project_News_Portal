@@ -37,9 +37,9 @@ Articles
         </tr>                           <!-- Не забываем закрыть HTML-тег строки -->
         {% for new in news %}
         <tr>
-            <td>{{ new.title | censor }}</td>                             <!-- мой фильтр Цензор-->
+            <td>{{ new.title | hide_forbidden }}</td>                             <!-- мой фильтр Цензор-->
             <td>{{ new.date_time_post | date:'d M Y' }}</td>
-            <td>{{ new.text_body | truncatechars:20 | censor }}</td>      <!-- мой фильтр Цензор-->
+            <td>{{ new.text_body | truncatechars:20 | hide_forbidden }}</td>      <!-- мой фильтр Цензор-->
         </tr>
         {% endfor %}
     </table>                            <!-- ... и таблицы -->

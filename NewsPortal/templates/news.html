@@ -40,7 +40,7 @@ News
         </tr>                           <!-- Не забываем закрыть HTML-тег строки -->
         {% for new in news %}
         <tr>
-            <td align="left">{{ new.title | censor }}</td>                             <!-- мой фильтр Цензор-->
+            <td align="left">{{ new.title | hide_forbidden }}</td>                       <!-- мой фильтр Цензор-->
 
             <td>
                 {% for category in new.category.all %}
@@ -49,7 +49,7 @@ News
             </td>
 
             <td align="center">{{ new.date_time_post | date:'d M Y' }}</td>
-            <td align="left">{{ new.text_body | truncatechars:20 | censor }}</td>      <!-- мой фильтр Цензор-->
+            <td align="left">{{ new.text_body | truncatechars:20 | hide_forbidden }}</td>      <!-- мой фильтр Цензор-->
         </tr>
         {% endfor %}
     </table>                            <!-- ... и таблицы -->

@@ -10,8 +10,8 @@ New
 
 <!-- В контенте на странице мы выводим саму новость, идентификатор которой был передан в url -->
 {% block content %}
-<h1>{{ new.title | censor }}</h1>
+<h1>{{ new.title | hide_forbidden }}</h1>
 <h3>Дата публикации: {{ new.date_time_post | date:'d M Y' }}</h3>
 <hr>
-<p>{{ new.text_body | censor }}</p>
+<p>{{ new.text_body | hide_forbidden }}</p>
 {% endblock content %}
