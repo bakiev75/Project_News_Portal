@@ -10,7 +10,10 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.1/ref/settings/
 """
 import os
+from datetime import datetime
 from pathlib import Path
+
+from django.conf.global_settings import LOGGING
 from dotenv import load_dotenv
 
 
@@ -192,5 +195,146 @@ CACHES = {
     'default': {
         'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
         'LOCATION': os.path.join(BASE_DIR, 'cache_files'),
+    }
+}
+
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+
+    'formatters': {
+        'my_verbose_1': {
+            'format': '{asctime} {levelname} {message}',    # Время, уровень сообщения, сообщение
+            'style': '{',
+        },
+        'my_verbose_2': {
+            'format': '{asctime} {levelname} {message} {pathname}',    # Время, уровень сообщения, сообщение + путь
+            'style': '{',
+        },
+        'my_verbose_3': {
+            'format': '{asctime} {levelname} {message} {pathname} {exc_info}',  # Время, уровень сообщения, сообщение
+            'style': '{',                                                       # + путь + стэк
+        },
+        'for_file_general': {
+            'format': '{asctime} {levelname} {module} {message}',        # В файл general
+            'style': '{',                                                # время, уровень сообщения, модуль, сообщение
+        },
+        'for_file_errors': {
+            'format': '{asctime} {levelname} {message} {pathname} {exc_info}',      # В файл errors.log
+            'style': '{',
+        },
+        'for_file_security': {
+            'format': '{asctime} {levelname} {module} {message}',        # время, уровень сообщения, модуль, сообщение
+            'style': '{',
+        },
+        'for_mail_admin': {
+            'format': '{asctime} {levelname} {message} {pathname}',        # время, уровень сообщения, модуль, сообщение
+            'style': '{',
+        },
+    },
+
+    'filters': {
+        'require_debug_true': {
+            '()': 'django.utils.log.RequireDebugTrue',
+        },
+        'require_debug_false': {
+            '()': 'django.utils.log.RequireDebugFalse',
+        },
+    },
+
+
+    'handlers': {
+        'console_1': {
+            'level': 'DEBUG',
+            'filters': ['require_debug_true'],
+            'class': 'logging.StreamHandler',
+            'formatter': 'my_verbose_1'
+        },
+        'console_2': {
+            'level': 'WARNING',
+            'filters': ['require_debug_true'],
+            'class': 'logging.StreamHandler',
+            'formatter': 'my_verbose_2'
+        },
+        'console_3': {
+            'level': 'ERROR',
+            'filters': ['require_debug_true'],
+            'class': 'logging.StreamHandler',
+            'formatter': 'my_verbose_3'
+        },
+        'console_4': {
+            'level': 'CRITICAL',
+            'filters': ['require_debug_true'],
+            'class': 'logging.StreamHandler',
+            'formatter': 'my_verbose_3'
+        },
+        'for_file_general': {
+            'level': 'INFO',
+            'filters': ['require_debug_false'],
+            'class': 'logging.FileHandler',
+            'filename': 'general.log',
+            'formatter': 'for_file_general'
+        },
+        'for_file_errors': {
+            'level': 'ERROR',
+            'filters': ['require_debug_true'],
+            'class': 'logging.FileHandler',
+            'filename': 'errors.log',
+            'formatter': 'for_file_errors'
+        },
+        'for_file_security': {
+            'level': 'DEBUG',
+            'filters': ['require_debug_true'],
+            'class': 'logging.FileHandler',
+            'filename': 'security.log',
+            'formatter': 'for_file_security'
+        },
+        'for_mail_admin': {
+            'level': 'ERROR',
+            'class': 'django.utils.log.AdminEmailHandler',
+            'formatter': 'for_mail_admin',
+            'filters': ['require_debug_false']
+        },
+    },
+
+    'loggers': {
+        'django': {                             # Логгер для п.1 задания D16.4
+            'handlers': ['console_1',           # сообщения с основного логгера django, уровня DEBUG
+                         'console_2',           # и выше, т.е. всё
+                         'console_3',
+                         'console_4',           # направляются в Хандлеры, в которых обрабатываются по п.1 для Консоли
+                         'for_file_general'],   # + по п.2 задания используется для файла general.log
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+        'django.request': {
+            'handlers': ['for_file_errors',
+                         'for_mail_admin'],
+            'level': 'DEBUG',
+            'propagate': False,
+        },
+        'django.server': {
+            'handlers': ['for_file_errors',
+                         'for_mail_admin'],
+            'level': 'DEBUG',
+            'propagate': False,
+        },
+
+        'django.template': {
+            'handlers': ['for_file_errors'],
+            'level': 'DEBUG',
+            'propagate': False,
+        },
+        'django.db.backends': {
+            'handlers': ['for_file_errors'],
+            'level': 'DEBUG',
+            'propagate': False,
+        },
+        'django.security': {
+            'handlers': ['for_file_security'],
+            'level': 'DEBUG',
+            'propagate': False,
+        },
     }
 }
