@@ -1,5 +1,5 @@
-from django.core.management.base import BaseCommand, CommandError
-from news.models import Post, Category, PostCategory
+from django.core.management.base import BaseCommand
+from news.models import Post, Category
 
 
 class Command(BaseCommand):
@@ -26,10 +26,10 @@ class Command(BaseCommand):
             return
 
         try:
-            print('Начало try')
+            # print('Начало try')
             category_1 = Category.objects.get(name=options["category"])
-            print(category_1)                                               # Проверка имени объекта класса
-            Post.objects.filter(category == category_1).delete()
+            # print(category_1)                                               # Проверка имени объекта класса
+            Post.objects.filter(category=category_1).delete()
             self.stdout.write(self.style.SUCCESS(f'Удалены все статьи и новости в категории {options["category"]}'))
-        except Post.DoesNotExist:
+        except Exception:
             self.stdout.write(self.style.ERROR(f'Не найдены записи в категории {options["category"]}'))

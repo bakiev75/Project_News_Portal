@@ -19,8 +19,8 @@ forbidden_words = ["ишак",
 ]                                # Список. Искомые слова. Дополняемый новыми словами
 
 
-@register.filter
-def hide_forbidden(value):
+@register.filter                                # Примечание. Данный фильтр не работает,
+def hide_forbidden(value):                      # если к слову "примыкает" знак препинания! (т.е. запятая или точка)
     words = value.split()
     result = []
     for word in words:
