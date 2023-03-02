@@ -15,6 +15,14 @@ from .forms import NewsForm, ArticleForm
 from .models import Post, Category
 from .filters import NewsFilter
 
+from django.utils.translation import gettext as _
+
+
+class Index(View):
+    def get(self, request):
+        string = _('Hello, world!')
+        return HttpResponse(string)
+
 # from .tasks import hello, printer
 from django.http import HttpResponse
 
