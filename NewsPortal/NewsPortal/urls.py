@@ -19,6 +19,7 @@ from django.urls import path, include
 from news.views import Index
 
 urlpatterns = [
+   path('i18n/', include('django.conf.urls.i18n')),
    path('admin/', admin.site.urls),
    path('pages/', include('django.contrib.flatpages.urls')),
    # Делаем так, чтобы все адреса из нашего приложения (news/urls.py)

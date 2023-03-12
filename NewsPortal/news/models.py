@@ -2,7 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.db.models import Sum
 from django.urls import reverse
-
+from django.utils.translation import gettext as _
 
 # Модель Author
 # Модель, содержащая объекты всех авторов.
@@ -38,7 +38,7 @@ class Author(models.Model):                                                     
 
 
 class Category(models.Model):                                                       # Модель 2
-    name = models.CharField(max_length=255, unique=True)
+    name = models.CharField(max_length=255, unique=True, help_text=_('Category name'))             # перевод
     subscribers = models.ManyToManyField(User, blank=True, null=True, related_name='categories')
 
     def __str__(self):
@@ -75,7 +75,7 @@ class Post(models.Model):                                                       
     author = models.ForeignKey(Author, on_delete=models.CASCADE)                            # - связь "один ко многим" с моделью Author
     article_or_new = models.CharField(max_length=3, choices=POSITIONS, default=article)     # ART - статья; NEW - новость
     title = models.CharField(max_length=255)                                                # Заголовок статьи или новости
-    text_body = models.TextField(default='No text')                                         # Текст статьи или новости
+    text_body = models.TextField()                                                          # Текст статьи или новости
     date_time_post = models.DateTimeField(auto_now_add=True)                                # Дата и время СОЗДАНИЯ записи
     rating_article_or_new = models.FloatField(default=0.0)                                  # Рейтинг статьи или новости
     category = models.ManyToManyField(Category, through='PostCategory')                     # - связь "многие ко многим" с моделью Category (через модель PostCategory)

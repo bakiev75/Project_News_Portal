@@ -13,7 +13,7 @@ import os
 from datetime import datetime
 from pathlib import Path
 
-from django.conf.global_settings import LOGGING
+from django.conf.global_settings import LOGGING, LANGUAGES
 from dotenv import load_dotenv
 
 
@@ -36,6 +36,8 @@ ALLOWED_HOSTS = ['127.0.0.1']
 # Application definition
 
 INSTALLED_APPS = (
+    'modeltranslation',
+
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -77,11 +79,12 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 
     'django.contrib.flatpages.middleware.FlatpageFallbackMiddleware',
+    'news.my_middleware.TimezoneMiddleware',
 ]
 
 ROOT_URLCONF = 'NewsPortal.urls'
 
-LOCALE_PATH = [
+LOCALE_PATHS = [
     os.path.join(BASE_DIR, 'locale')
 ]
 
@@ -137,7 +140,12 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/4.1/topics/i18n/
 
-LANGUAGE_CODE = 'ru-ru'
+LANGUAGE_CODE = 'ru'
+
+LANGUAGES = [
+    ('en-us', 'English'),
+    ('ru', 'Русский')
+]
 
 TIME_ZONE = 'UTC'
 
@@ -305,8 +313,8 @@ LOGGING = {
 
     'loggers': {
         'django': {                             # Логгер для п.1 задания D16.4
-            'handlers': ['console_1',           # сообщения с основного логгера django, уровня DEBUG
-                         'console_2',           # и выше, т.е. всё
+            'handlers': [# 'console_1',         # сообщения с основного логгера django, уровня DEBUG, и выше, т.е. всё
+                         'console_2',           # (console_1 отключил для следующих модулей, что бы терминал освободить)
                          'console_3',
                          'console_4',           # направляются в Хандлеры, в которых обрабатываются по п.1 для Консоли
                          'for_file_general'],   # + по п.2 задания используется для файла general.log

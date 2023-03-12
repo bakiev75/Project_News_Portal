@@ -1,6 +1,8 @@
 <!--  наследуемся от шаблона default.html, который мы создавали для flatpages -->
 {% extends 'flatpages/default.html' %}
 
+{% load i18n %}
+
 {% load custom_filters %}                           <!-- Объявляем свой фильтр-->
 
 <!-- Название у нас будет New -->
@@ -11,7 +13,7 @@ New
 <!-- В контенте на странице мы выводим саму новость, идентификатор которой был передан в url -->
 {% block content %}
 <h1>{{ new.title | hide_forbidden }}</h1>
-<h3>Дата публикации: {{ new.date_time_post | date:'d M Y' }}</h3>
+<h3>{% trans 'Date of publication:' %} {{ new.date_time_post | date:'d M Y' }}</h3>
 <hr>
 <p>{{ new.text_body | hide_forbidden }}</p>
 {% endblock content %}

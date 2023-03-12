@@ -11,26 +11,36 @@ from django.views import View
 # что в этом представлении мы будем выводить список объектов из БД
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 
+from django.core.mail import EmailMultiAlternatives     # импортируем класс для создания объекта письма с html
+from django.template.loader import render_to_string     # импортируем функцию, которая срендерит наш html в текст
+
 from .forms import NewsForm, ArticleForm
 from .models import Post, Category
 from .filters import NewsFilter
 
 from django.utils.translation import gettext as _
 
+# from .tasks import hello, printer
+from django.http import HttpResponse
+
+from django.utils import timezone
+from django.shortcuts import redirect, render
+
+import pytz                                     #  импортируем стандартный модуль для работы с часовыми поясами
+
 
 class Index(View):
     def get(self, request):
         string = _('Hello, world!')
-        return HttpResponse(string)
+        # return HttpResponse(string)
 
-# from .tasks import hello, printer
-from django.http import HttpResponse
-
-from django.core.mail import EmailMultiAlternatives     # импортируем класс для создания объекта письма с html
-from django.template.loader import render_to_string     # импортируем функцию, которая срендерит наш html в текст
-
+        context = {
+            'string': string
+        }
+        return HttpResponse(render(request, 'index.html', context))
 
 class NewsList(ListView):
+    curent_time = timezone.now()
     model = Post                    # Указываем модель, объекты которой мы будем выводить
     ordering = '-date_time_post'    # Поле, которое будет использоваться для сортировки объектов - дата
     template_name = 'news.html'     # Указываем имя шаблона, в котором будут все инструкции о том,
@@ -49,21 +59,28 @@ class NewsList(ListView):
         # В ответе мы должны получить словарь.
         context = super().get_context_data(**kwargs)
         # К словарю добавим текущую дату в ключ 'time_now'.
-        context['time_now'] = datetime.utcnow()
+        context['current_time'] = timezone.now()
+        context['timezones'] = pytz.common_timezones
         # Добавим ещё одну пустую переменную,
         # чтобы на её примере рассмотреть работу ещё одного фильтра.
         # Анонс горячих новостей.
         context['hot_news'] = None
         return context
 
+    def post(self, request):
+        request.session['django_timezone'] = request.POST['timezone']
+        return redirect('/news')
+
 class CategoryListViev(NewsList):                           # Создание в процессе вебинара
     model = Post
     template_name = 'category_list.html'
     context_object_name = 'category_news_list'
+
     def get_queryset(self):
         self.category = get_object_or_404(Category, id=self.kwargs['pk'])
         queryset = Post.objects.filter(category=self.category).order_by('-date_time_post')
         return queryset
+
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

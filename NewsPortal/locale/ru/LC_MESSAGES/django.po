@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-03-02 01:59+0500\n"
+"POT-Creation-Date: 2023-03-06 14:49+0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -19,6 +19,63 @@ msgstr ""
 "Plural-Forms: nplurals=4; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
 "%10<=4 && (n%100<12 || n%100>14) ? 1 : n%10==0 || (n%10>=5 && n%10<=9) || (n"
 "%100>=11 && n%100<=14)? 2 : 3);\n"
-#: .\news\views.py:23
+
+#: .\news\models.py:41
+msgid "Category name"
+msgstr "Имя категории"
+
+#: .\news\views.py:28
 msgid "Hello, world!"
 msgstr "Привет, мир!"
+
+#: .\templates\flatpages\default.html:21
+msgid "Start Bootstrap"
+msgstr "Стартовая страница"
+
+#: .\templates\flatpages\default.html:42
+msgid "Home"
+msgstr "Домой"
+
+#: .\templates\flatpages\default.html:43
+msgid "Link"
+msgstr "Соединение"
+
+#: .\templates\flatpages\default.html:45
+msgid "Dropdown"
+msgstr "Вниз"
+
+#: .\templates\new.html:16
+msgid "Date of publication:"
+msgstr "Дата публикации"
+
+#: .\templates\news.html:14
+msgid "All news"
+msgstr "Новостей нет!"
+
+#: .\templates\news.html:19
+msgid "Today:"
+msgstr "Сегодня"
+
+#: .\templates\news.html:24
+msgid "Total news and articles"
+msgstr "Всего новостей и статей"
+
+#: .\templates\news.html:30
+msgid "News headline"
+msgstr "Заголовок"
+
+#: .\templates\news.html:33
+msgid "Categories"
+msgstr "Имя категории"
+
+#: .\templates\news.html:37
+msgid "Publication date"
+msgstr "Дата публикации"
+
+#: .\templates\news.html:40
+msgid "Text"
+msgstr "Текст"
+
+#: .\templates\news.html:59
+msgid "No news!"
+msgstr "Новостей нет!"
